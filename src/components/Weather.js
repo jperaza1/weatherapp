@@ -1,14 +1,19 @@
 import React, { useState } from 'react'
 import DisplayWeather from './DisplayWeather';
 import '../styles/weather.css';
+import useFetch from '../hooks/useFetch';
 
 export const Weather = () => {
 
-  const [weather, setWeather] = useState([]);
+  
   const [form, setForm] = useState({
     city: "",
     country: "",
   });
+
+  const [url, setUrl] = useState(null);
+  const { isloading, result, error, doFetch } = useFetch(url);
+  console.log(result);
 
   const APIKEY = "1f405868238f38399976132d716d71d3";
 
@@ -19,18 +24,7 @@ export const Weather = () => {
       alert("Add City")
     } else {
 
-      const data = await fetch(`https://api.openweathermap.org/data/2.5/weather?q=${form.city},${form.country}&APPID=${APIKEY}`)
-        .then((res) => res.json())
-        .then((data) => data)
-        .catch((err) => console.log(err));
-
-      console.log(data);
-
-      if(data?.cod === "404") {
-        alert("Ciudad no encontrada")
-      } else {
-        setWeather({ data: data });
-      }
+      setUrl(`https://api.openweathermap.org/data/2.5/weather?q=${form.city},${form.country}&APPID=${APIKEY}`);
       
     }
 
@@ -72,9 +66,9 @@ export const Weather = () => {
       </form>
 
       {/* {console.log(weather)} */}
-      {weather.data !== undefined ? (
+      {result?.data !== undefined ? (
         <div>
-          <DisplayWeather data={weather.data} />
+          <DisplayWeather data={result.data} />
         </div>
       ) : null}
     </div>
